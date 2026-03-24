@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Прва Спин Лига - Македонија</title>
+<style>
+:root{
+  --bg:#f5f7fb;
+  --card:#fff;
+  --text:#1f2937;
+  --muted:#6b7280;
+  --line:#d1d5db;
+  --accent:#2563eb;
+  --accent2:#1d4ed8;
+  --good:#059669;
+  --dark:#374151;
+  --warn:#b45309;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+body.tournament-mode{background:#eaf0fb}
+.wrap{width:100%;max-width:1920px;height:100dvh;overflow:hidden;margin:auto;padding:4px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;min-height:36px}
+.top h1{margin:0;font-size:16px;line-height:1.05}
+.sub{color:var(--muted);font-size:9px;line-height:1.1;margin:1px 0 2px}
+.top-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:4px;align-items:start;height:calc(100dvh - 42px)}
+body.tournament-mode .grid{grid-template-columns:0 minmax(0,1fr)}
+.card{background:var(--card);border-radius:10px;padding:5px;box-shadow:0 2px 8px rgba(0,0,0,.05);min-height:0;overflow:auto}
+label{display:block;font-size:10px;font-weight:700;margin:4px 0 2px}
+input,select,textarea,button{width:100%;padding:4px 6px;border:1px solid var(--line);border-radius:7px;font-size:10px}
+textarea{min-height:38px;max-height:56px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.btns{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
+button{width:auto;border:none;color:#fff;background:var(--accent);cursor:pointer;font-weight:700;padding:4px 7px;line-height:1.1}
+button:hover{background:var(--accent2)}
+button.green{background:var(--good)}
+button.secondary{background:var(--dark)}
+button.warn{background:var(--warn)}
+.small{font-size:10px;color:var(--muted);line-height:1.3}
+.pill{display:inline-block;background:#eff6ff;color:#1d4ed8;font-size:9px;font-weight:700;padding:2px 6px;border-radius:999px;margin-bottom:3px}
+.table-wrap{overflow:auto;max-height:calc(100dvh - 170px);border:1px solid #e5e7eb;border-radius:8px;background:#fff}
+body.tournament-mode .table-wrap{max-height:calc(100dvh - 110px)}
+table{width:100%;border-collapse:collapse;font-size:10px}
+th,td{border:1px solid #e5e7eb;padding:3px 4px;text-align:center;vertical-align:middle}
+th{background:#eef2ff;position:sticky;top:0;z-index:1;font-size:9px;line-height:1.1}
+.left{text-align:left}
+.mini{width:50px;padding:3px 4px;font-size:10px}
+.summary{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:4px 0}
+.box{background:#f8fafc;border:1px solid #e5e7eb;border-radius:7px;padding:5px}
+.box .k{font-size:8px;color:var(--muted)}
+.box .v{font-size:11px;font-weight:700;line-height:1.1}
+.section{margin-top:4px}
+.footer-note{display:none}
+.tag{display:inline-block;padding:2px 6px;border-radius:999px;background:#ecfeff;color:#155e75;font-size:10px;font-weight:700}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin:4px 0 6px}
+.tab-btn{background:#e5e7eb;color:#111827}
+.tab-btn.active{background:var(--accent);color:#fff}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+#controlPanel{transition:all .25s ease}
+body.tournament-mode #controlPanel{opacity:0;pointer-events:none;transform:translateX(-20px);padding:0;border:none;box-shadow:none}
+#resultPanel{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+body.tournament-mode #resultPanel{padding:10px}
+body.tournament-mode .top h1{font-size:20px}
+body.tournament-mode .sub{font-size:10px;margin-bottom:4px}
+body.tournament-mode .summary{grid-template-columns:repeat(5,minmax(110px,1fr));gap:6px}
+body.tournament-mode .box{padding:8px}
+body.tournament-mode .box .k{font-size:10px}
+body.tournament-mode .box .v{font-size:16px}
+body.tournament-mode table{font-size:11px}
+body.tournament-mode th{font-size:10px}
+body.tournament-mode th,body.tournament-mode td{padding:5px 6px}
+body.tournament-mode .tabs{margin-top:4px;margin-bottom:6px}
+#tournamentModeBtn.active{background:var(--good)}
+@media (max-width:1200px){
+  .wrap{height:auto;overflow:visible}
+  .grid{grid-template-columns:1fr;height:auto}
+  .summary{grid-template-columns:1fr 1fr}
+  .table-wrap{max-height:none}
+  .footer-note{display:block}
+}
+@media print{
+  body{background:#fff}
+  .no-print{display:none!important}
+  .wrap{max-width:100%;padding:0;height:auto}
+  .table-wrap{max-height:none;border:none}
+  th{position:static}
+  .card{box-shadow:none;border:1px solid #ddd}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Прва Спин Лига - Македонија</h1>
+      <div class="sub">Усогласено со правилникот: 4 рунди, рангирање по рунда, делени пенали при ист улов, специјален третман за натпреварувачи без улов, auto league и TV scoreboard.</div>
+    </div>
+    <div class="top-actions no-print">
+      <div id="countdown" style="font-weight:700;font-size:14px;color:#2563eb"></div>
+      <button onclick="startRoundTimer()" class="green">Старт рунда</button>
+      <button id="tournamentModeBtn" class="secondary" onclick="toggleTournamentMode()">Tournament Mode: OFF</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card no-print" id="controlPanel">
+      <div class="pill">Поставки за коло</div>
+
+      <div class="row">
+        <div><label>Број на играчи</label><input id="playersCount" type="number" min="2" value="19"></div>
+        <div><label>Број на рунди</label><input id="roundsCount" type="number" min="4" max="4" value="4"></div>
+      </div>
+
+      <label>Име на натпревар / коло</label><input id="competitionName" type="text" placeholder="Пр. Спин Лига - Коло 3">
+
+      <div class="row3">
+        <div><label>Датум</label><input id="competitionDate" type="date"></div>
+        <div><label>Сектор / Локација</label><input id="sectorName" type="text" placeholder="Сектор А"></div>
+        <div><label>Рунда (мин)</label><input id="roundMinutes" type="number" value="45"></div>
+      </div>
+
+      <div class="row3">
+        <div><label>Пауза (мин)</label><input id="breakMinutes" type="number" value="15"></div>
+        <div><label>Позиции</label><select id="drawMode"><option value="random">Жреб</option><option value="manual">Рачно</option></select></div>
+        <div><label>Завршени кола во лига</label><input id="finishedRounds" type="number" min="0" value="2"></div>
+      </div>
+
+      <label>Имиња на играчи (по еден во ред)</label><textarea id="playersInput"></textarea>
+      <label>Стартни позиции за рунда 1 (по една во ред)</label><textarea id="positionsInput"></textarea>
+
+      <div class="btns">
+        <button onclick="generateTemplate()">Пример</button>
+        <button onclick="drawPositions()">Жреб</button>
+        <button class="green" onclick="build()">Генерирај</button>
+        <button class="green" onclick="addCurrentRoundToLeague()">Заврши коло → Лига</button>
+        <button onclick="saveState()">Зачувај</button>
+        <button onclick="loadState()">Вчитај</button>
+        <button onclick="exportOfflineJson()">Export JSON</button>
+        <button onclick="importOfflineJsonClick()">Import JSON</button>
+        <button onclick="toggleAutoSave()" id="autoSaveBtn">Auto Save: OFF</button>
+        <button class="warn" onclick="clearState()">Избриши</button>
+        <button class="secondary" onclick="exportCSV()">CSV</button>
+        <button class="secondary" onclick="printReport()">Записник</button>
+        <button class="secondary" onclick="openTvScoreboard()">TV Scoreboard</button>
+      </div>
+      <input id="offlineJsonFile" type="file" accept="application/json,.json" style="display:none" onchange="importOfflineJson(event)">
+
+      <div class="section">
+        <div class="pill">League Scoreboard</div>
+        <label>Внес за завршени кола (еден играч по ред)</label><textarea id="leagueInput" placeholder="Играч 1|12.5,8.0|23,19&#10;Играч 2|10.0,11.5|20,17"></textarea>
+        <div class="small">Формат: <span class="tag">Име | пенали по кола | риби по кола</span><br>Пример за 2 завршени кола: <span class="tag">Перо|12.5,8|23,19</span></div>
+        <div class="btns">
+          <button class="green" onclick="renderLeagueScoreboard()">Освежи scoreboard</button>
+          <button class="secondary" onclick="importLeagueFromCurrentText()">Синхронизирај број на кола</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="resultPanel">
+      <div class="pill">Резултати</div>
+      <div id="summary"></div>
+      <div id="out"></div>
+      <div class="footer-note">Scoreboard за лига подолу ги собира пеналите по кола, па изедначување решава со вкупно риби, па најдобро коло по пенали, па најдобро коло по риби.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function qs(id){ return document.getElementById(id); }
+function esc(v){ return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function fmt(n){ n = Number(n || 0); return n % 1 === 0 ? String(n) : n.toFixed(2); }
+function norm(t){ return String(t || '').split('\n').map(x => x.trim()).filter(Boolean); }
+function shuffle(a){ const arr=[...a]; for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
+
+function generateTemplate(){
+  const names = [
+    'Стефан Јелиќ','Александар Јакимовски','Славчо Наумовски','Валентино Бошковски','Давор Рашиќ',
+    'Кире Малинков','Александар Стојановски','Марио Бошковски','Михаил Василевски','Борис Аговски',
+    'Јордан Трајковски','Марио Симоновски','Кристијан Апостоловски','Цветан Трифуновски','Перица Стојковски',
+    'Давор Јакимовски','Синиша Китаноски','Марјан Андоновски','Диме Јованов'
+  ];
+
+  const leagueLines = [
+    'Стефан Јелиќ|55,32.5|1,12',
+    'Александар Јакимовски|46,44|2,2',
+    'Славчо Наумовски|43.5,44.5|3,2',
+    'Валентино Бошковски|27.5,36|5,4',
+    'Давор Рашиќ|24.5,30.5|13,5',
+    'Кире Малинков|51,59|1,0',
+    'Александар Стојановски|60,40.5|0,4',
+    'Марио Бошковски|11,32.5|13,10',
+    'Михаил Василевски|26,43|7,3',
+    'Борис Аговски|16,19|11,15',
+    'Јордан Трајковски|60,45|0,2',
+    'Марио Симоновски|55,47|1,3',
+    'Кристијан Апостоловски|25,14|6,12',
+    'Цветан Трифуновски|28.5,59|6,0',
+    'Перица Стојковски|32.5,47|6,3',
+    'Давор Јакимовски|48,30|2,5',
+    'Синиша Китаноски|60,52.5|0,1',
+    'Марјан Андоновски|48,53.5|2,1',
+    'Диме Јованов|41.5,30.5|3,5'
+  ];
+
+  const c = names.length;
+  qs('playersCount').value = c;
+  qs('roundsCount').value = 4;
+  qs('finishedRounds').value = 2;
+  qs('playersInput').value = names.join('\n');
+  qs('positionsInput').value = Array.from({length:c}, (_,i) => i + 1).join('\n');
+  qs('leagueInput').value = leagueLines.join('\n');
+  if(qs('drawMode').value === 'random') drawPositions();
+}
+
+function drawPositions(){
+  const c = Number(qs('playersCount').value) || 0;
+  if(c < 2) return alert('Внеси барем 2 играчи.');
+  qs('positionsInput').value = shuffle(Array.from({length:c}, (_,i) => i + 1)).join('\n');
+}
+
+function getData(){
+  const playersCount = Number(qs('playersCount').value);
+  const roundsCount = 4;
+  const players = norm(qs('playersInput').value);
+  let positions = norm(qs('positionsInput').value);
+
+  if(playersCount < 2) return alert('Невалиден број на играчи.'), null;
+  if(players.length !== playersCount) return alert('Бројот на имиња не се совпаѓа со бројот на играчи.'), null;
+  if(qs('drawMode').value === 'random' && positions.length !== playersCount){
+    drawPositions();
+    positions = norm(qs('positionsInput').value);
+  }
+  if(positions.length !== playersCount) return alert('Бројот на позиции не се совпаѓа со бројот на играчи.'), null;
+
+  const rounds = [];
+  for(let r=0; r<roundsCount; r++){
+    const row = [];
+    for(let i=0; i<playersCount; i++) row.push(positions[(i+r)%playersCount]);
+    rounds.push(row);
+  }
+
+  return {
+    competitionName: qs('competitionName').value.trim() || 'Натпревар',
+    competitionDate: qs('competitionDate').value || '',
+    sectorName: qs('sectorName').value.trim() || '',
+    roundMinutes: Number(qs('roundMinutes').value || 45),
+    breakMinutes: Number(qs('breakMinutes').value || 15),
+    finishedRounds: Number(qs('finishedRounds').value || 0),
+    playersCount,
+    roundsCount,
+    players,
+    positions,
+    rounds,
+    totalStartBoxes: playersCount * 2,
+    drawMode: qs('drawMode').value
+  };
+}
+
+function build(){
+  const d = getData();
+  if(!d) return;
+
+  qs('summary').innerHTML = [
+    '<div class="summary">',
+    `<div class="box"><div class="k">Натпревар</div><div class="v">${esc(d.competitionName)}</div></div>`,
+    `<div class="box"><div class="k">Датум / Сектор</div><div class="v">${esc(d.competitionDate || '-')} ${d.sectorName ? '/ ' + esc(d.sectorName) : ''}</div></div>`,
+    `<div class="box"><div class="k">Играчи</div><div class="v">${d.playersCount}</div></div>`,
+    `<div class="box"><div class="k">Рунди</div><div class="v">4 × ${d.roundMinutes}м</div></div>`,
+    `<div class="box"><div class="k">Стартни позиции</div><div class="v">${d.totalStartBoxes}</div></div>`,
+    '</div>'
+  ].join('');
+
+  let html = [
+    '<div class="tabs no-print">',
+    '<button class="tab-btn active" onclick="showTab(\'currentRound\', this)">Тековно коло</button>',
+    '<button class="tab-btn" onclick="showTab(\'round1Tab\', this)">Коло 1</button>',
+    '<button class="tab-btn" onclick="showTab(\'round2Tab\', this)">Коло 2</button>',
+    '<button class="tab-btn" onclick="showTab(\'round3Tab\', this)">Коло 3</button>',
+    '<button class="tab-btn" onclick="showTab(\'round4Tab\', this)">Коло 4</button>',
+    '<button class="tab-btn" onclick="showTab(\'leagueTab\', this)">League Scoreboard</button>',
+    '<button class="tab-btn" onclick="showTab(\'finalTab\', this)">Финален пласман</button>',
+    '</div>',
+    '<div id="currentRound" class="tab-panel active" style="display:flex;flex-direction:column;min-height:0">',
+    '<div class="section" style="display:flex;flex-direction:column;min-height:0">',
+    '<div class="pill">Коло - внес по рунди</div>',
+    '<div class="table-wrap"><table><thead><tr><th>#</th><th>Играч</th>'
+  ].join('');
+
+  for(let r=0; r<4; r++) html += `<th>Р${r+1} Позиција</th><th>Р${r+1} Риби</th><th>Р${r+1} Пенали</th>`;
+  html += '<th>Вкупно риби</th><th>Вкупно пенали</th><th>Коло пласман</th></tr></thead><tbody>';
+
+  d.players.forEach((name,i) => {
+    html += `<tr><td>${i+1}</td><td class="left">${esc(name)}</td>`;
+    for(let r=0; r<4; r++){
+      html += `<td>${esc(d.rounds[r][i])}</td>`;
+      html += `<td><input class="mini" id="fish_${i}_${r}" type="number" min="0" value="0" oninput="calc()"></td>`;
+      html += `<td id="pen_${i}_${r}">-</td>`;
+    }
+    html += `<td id="tf_${i}">0</td><td id="tp_${i}">0</td><td id="pl_${i}">-</td></tr>`;
+  });
+
+  html += [
+    '</tbody></table></div>',
+    '<div class="btns no-print" style="position:sticky;bottom:0;background:#fff;padding-top:3px;z-index:2"><button class="green" onclick="calc()">Пресметај коло</button></div>',
+    '</div></div>',
+    '<div id="round1Tab" class="tab-panel"><div class="section"><div class="pill">Коло 1 - завршено</div><div id="round1Board"></div></div></div>',
+    '<div id="round2Tab" class="tab-panel"><div class="section"><div class="pill">Коло 2 - завршено</div><div id="round2Board"></div></div></div>',
+    '<div id="round3Tab" class="tab-panel"><div class="section"><div class="pill">Коло 3</div><div id="round3Board"></div></div></div>',
+    '<div id="round4Tab" class="tab-panel"><div class="section"><div class="pill">Коло 4</div><div id="round4Board"></div></div></div>',
+    '<div id="leagueTab" class="tab-panel"><div class="section"><div class="pill">League Scoreboard</div><div id="leagueBoard"></div></div></div>',
+    '<div id="finalTab" class="tab-panel"><div class="section"><div class="pill">Финален пласман</div><div id="finalRound"></div></div></div>'
+  ].join('');
+
+  qs('out').innerHTML = html;
+  calc();
+  renderLeagueScoreboard();
+}
+
+function calcRoundPenalties(values, totalPlayers){
+  const positives = values.filter(v => v.fish > 0).sort((a,b) => b.fish - a.fish || a.idx - b.idx);
+  const penalties = Array(totalPlayers).fill(null);
+  let k = 0;
+  while(k < positives.length){
+    let end = k;
+    while(end + 1 < positives.length && positives[end + 1].fish === positives[k].fish) end++;
+    const fromPlace = k + 1;
+    const toPlace = end + 1;
+    let pen;
+    if(fromPlace === toPlace) pen = fromPlace;
+    else {
+      let sum = 0;
+      for(let p=fromPlace; p<=toPlace; p++) sum += p;
+      pen = sum / (toPlace - fromPlace + 1);
+    }
+    for(let z=k; z<=end; z++) penalties[positives[z].idx] = Number(pen.toFixed(2));
+    k = end + 1;
+  }
+
+  const zeroes = values.filter(v => v.fish === 0);
+  if(zeroes.length === 1) penalties[zeroes[0].idx] = totalPlayers;
+  else if(zeroes.length > 1){
+    const firstMissingPlace = positives.length + 1;
+    const avg = (firstMissingPlace + totalPlayers) / 2;
+    zeroes.forEach(z => penalties[z.idx] = Number(avg.toFixed(2)));
+  }
+  return penalties;
+}
+
+function calc(){
+  const d = getData();
+  if(!d) return;
+  const totals = d.players.map((name,i) => ({i,name,fish:0,pen:0,roundPens:[],roundFish:[]}));
+
+  for(let r=0; r<4; r++){
+    const values = d.players.map((_,i) => ({idx:i, fish:Number(qs(`fish_${i}_${r}`)?.value || 0)}));
+    const pens = calcRoundPenalties(values, d.playersCount);
+    values.forEach(v => {
+      qs(`pen_${v.idx}_${r}`).textContent = fmt(pens[v.idx]);
+      totals[v.idx].fish += v.fish;
+      totals[v.idx].pen += pens[v.idx];
+      totals[v.idx].roundPens.push(Number(pens[v.idx]));
+      totals[v.idx].roundFish.push(Number(v.fish));
+    });
+  }
+
+  const ranking = [...totals].sort((a,b) => {
+    if(a.pen !== b.pen) return a.pen - b.pen;
+    if(b.fish !== a.fish) return b.fish - a.fish;
+    const ap = [...a.roundPens].sort((x,y) => x - y);
+    const bp = [...b.roundPens].sort((x,y) => x - y);
+    for(let i=0; i<ap.length; i++) if(ap[i] !== bp[i]) return ap[i] - bp[i];
+    const af = [...a.roundFish].sort((x,y) => y - x);
+    const bf = [...b.roundFish].sort((x,y) => y - x);
+    for(let i=0; i<af.length; i++) if(af[i] !== bf[i]) return bf[i] - af[i];
+    return a.i - b.i;
+  });
+
+  ranking.forEach((x,pos) => {
+    qs(`tf_${x.i}`).textContent = fmt(x.fish);
+    qs(`tp_${x.i}`).textContent = fmt(x.pen);
+    qs(`pl_${x.i}`).textContent = pos + 1;
+  });
+
+  let html = '<div class="table-wrap" style="margin-top:8px"><table><thead><tr><th>Пласман</th><th>Играч</th><th>Вкупно риби</th><th>Вкупно пенали</th><th>Најдобра пенал рунда</th><th>Најдобра рунда риби</th></tr></thead><tbody>';
+  ranking.forEach((x,pos) => {
+    const rowStyle = pos === 0 ? ' style="background:#fff7cc;font-weight:700"' : pos === 1 ? ' style="background:#f3f4f6;font-weight:700"' : pos === 2 ? ' style="background:#fde7d7;font-weight:700"' : '';
+    html += `<tr${rowStyle}><td>${pos+1}</td><td class="left">${esc(x.name)}</td><td>${fmt(x.fish)}</td><td>${fmt(x.pen)}</td><td>${fmt(Math.min(...x.roundPens))}</td><td>${fmt(Math.max(...x.roundFish))}</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+  qs('finalRound').innerHTML = html;
+
+  const finalBtn = document.querySelector('.tab-btn[onclick*="finalTab"]');
+  if(finalBtn) showTab('finalTab', finalBtn);
+}
+
+function parseLeagueLines(){
+  const lines = norm(qs('leagueInput').value);
+  return lines.map((line,idx) => {
+    const parts = line.split('|').map(s => s.trim());
+    const name = parts[0] || `Играч ${idx + 1}`;
+    const penCols = (parts[1] || '').split(',').map(x => Number(x.trim())).filter(x => !Number.isNaN(x));
+    const fishCols = (parts[2] || '').split(',').map(x => Number(x.trim())).filter(x => !Number.isNaN(x));
+    return {name, penCols, fishCols, idx};
+  }).filter(x => x.name);
+}
+
+function getCurrentRoundRankingData(){
+  const d = getData();
+  if(!d) return [];
+  const totals = d.players.map((name,i) => ({i,name,fish:0,pen:0,roundPens:[],roundFish:[]}));
+  for(let r=0; r<4; r++){
+    const values = d.players.map((_,i) => ({idx:i, fish:Number(qs(`fish_${i}_${r}`)?.value || 0)}));
+    const pens = calcRoundPenalties(values, d.playersCount);
+    values.forEach(v => {
+      totals[v.idx].fish += v.fish;
+      totals[v.idx].pen += pens[v.idx];
+      totals[v.idx].roundPens.push(Number(pens[v.idx]));
+      totals[v.idx].roundFish.push(Number(v.fish));
+    });
+  }
+  return [...totals].sort((a,b) => {
+    if(a.pen !== b.pen) return a.pen - b.pen;
+    if(b.fish !== a.fish) return b.fish - a.fish;
+    const ap = [...a.roundPens].sort((x,y) => x - y);
+    const bp = [...b.roundPens].sort((x,y) => x - y);
+    for(let i=0; i<ap.length; i++) if(ap[i] !== bp[i]) return ap[i] - bp[i];
+    const af = [...a.roundFish].sort((x,y) => y - x);
+    const bf = [...b.roundFish].sort((x,y) => y - x);
+    for(let i=0; i<af.length; i++) if(af[i] !== bf[i]) return bf[i] - af[i];
+    return a.i - b.i;
+  });
+}
+
+function addCurrentRoundToLeague(){
+  const ranking = getCurrentRoundRankingData();
+  if(!ranking.length) return;
+  const existing = parseLeagueLines();
+  const map = new Map(existing.map(x => [x.name, x]));
+  ranking.forEach(row => {
+    const item = map.get(row.name) || {name:row.name, penCols:[], fishCols:[], idx:map.size};
+    item.penCols.push(Number(fmt(row.pen)));
+    item.fishCols.push(Number(fmt(row.fish)));
+    map.set(row.name, item);
+  });
+  const lines = [...map.values()].map(x => `${x.name}|${x.penCols.join(',')}|${x.fishCols.join(',')}`);
+  qs('leagueInput').value = lines.join('\n');
+  qs('finishedRounds').value = lines.length ? [...map.values()][0].penCols.length : qs('finishedRounds').value;
+  renderLeagueScoreboard();
+  alert('Тековното коло е додадено во League Scoreboard.');
+}
+
+function importLeagueFromCurrentText(){
+  const rows = parseLeagueLines();
+  const maxRounds = rows.reduce((m,r) => Math.max(m, r.penCols.length), 0);
+  qs('finishedRounds').value = maxRounds;
+  renderLeagueScoreboard();
+}
+
+function openTvScoreboard(){
+  const rows = parseLeagueLines();
+  const current = getCurrentRoundRankingData();
+  const league = [...rows].sort((a,b) => {
+    const aPen = a.penCols.reduce((s,v) => s + v, 0);
+    const bPen = b.penCols.reduce((s,v) => s + v, 0);
+    if(aPen !== bPen) return aPen - bPen;
+    const aFish = a.fishCols.reduce((s,v) => s + v, 0);
+    const bFish = b.fishCols.reduce((s,v) => s + v, 0);
+    if(bFish !== aFish) return bFish - aFish;
+    return a.idx - b.idx;
+  });
+
+  const w = window.open('', '_blank');
+  if(!w) return alert('Browser го блокира popup прозорецот.');
+
+  const tvTitle = esc(qs('competitionName').value || 'TV Scoreboard');
+  const tvDate = esc(qs('competitionDate').value || '-');
+  const tvSector = esc(qs('sectorName').value || '-');
+  const tvFinished = esc(qs('finishedRounds').value || '0');
+  const tvPlayers = esc(qs('playersCount').value || '0');
+
+  const leagueRows = league.slice(0,10).map((r,i) => {
+    const cls = i===0 ? 'top1' : i===1 ? 'top2' : i===2 ? 'top3' : '';
+    const rowStyle = i===0 ? ' style="background:#fff7cc;font-weight:700"' : i===1 ? ' style="background:#f3f4f6;font-weight:700"' : i===2 ? ' style="background:#fde7d7;font-weight:700"' : '';
+    return `<tr class="${cls}"${rowStyle}><td>${i+1}</td><td class="left">${esc(r.name)}</td><td>${fmt(r.penCols.reduce((s,v)=>s+v,0))}</td><td>${fmt(r.fishCols.reduce((s,v)=>s+v,0))}</td></tr>`;
+  }).join('');
+
+  const currentRows = current.slice(0,10).map((r,i) => {
+    const cls = i===0 ? 'top1' : i===1 ? 'top2' : i===2 ? 'top3' : '';
+    const rowStyle = i===0 ? ' style="background:#fff7cc;font-weight:700"' : i===1 ? ' style="background:#f3f4f6;font-weight:700"' : i===2 ? ' style="background:#fde7d7;font-weight:700"' : '';
+    return `<tr class="${cls}"${rowStyle}><td>${i+1}</td><td class="left">${esc(r.name)}</td><td>${fmt(r.pen)}</td><td>${fmt(r.fish)}</td></tr>`;
+  }).join('');
+
+  const parts = [];
+  parts.push('<!DOCTYPE html>');
+  parts.push('<html lang="mk">');
+  parts.push('<head>');
+  parts.push('<meta charset="UTF-8">');
+  parts.push('<meta name="viewport" content="width=device-width,initial-scale=1.0">');
+  parts.push('<title>TV Scoreboard</title>');
+  parts.push('<style>');
+  parts.push('body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0f172a;color:#fff}');
+  parts.push('.wrap{padding:24px;max-width:1920px;margin:auto}');
+  parts.push('h1{margin:0 0 8px;font-size:42px}');
+  parts.push('.sub{color:#cbd5e1;font-size:20px;margin-bottom:18px}');
+  parts.push('.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}');
+  parts.push('.card{background:#111827;border-radius:18px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.35)}');
+  parts.push('.title{font-size:28px;font-weight:700;margin-bottom:12px}');
+  parts.push('table{width:100%;border-collapse:collapse;font-size:24px}');
+  parts.push('th,td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.12);text-align:center}');
+  parts.push('th{color:#93c5fd}');
+  parts.push('.left{text-align:left}');
+  parts.push('.top1{color:#fbbf24;font-weight:700}');
+  parts.push('.top1::before{content:"🥇 ";}');
+  parts.push('.top2{color:#d1d5db;font-weight:700}');
+  parts.push('.top2::before{content:"🥈 ";}');
+  parts.push('.top3{color:#f59e0b;font-weight:700}');
+  parts.push('.top3::before{content:"🥉 ";}');
+  parts.push('.meta{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}');
+  parts.push('.box{background:#1f2937;border-radius:14px;padding:12px}');
+  parts.push('.k{font-size:14px;color:#93c5fd}');
+  parts.push('.v{font-size:28px;font-weight:700}');
+  parts.push('</style>');
+  parts.push('</head>');
+  parts.push('<body>');
+  parts.push('<div class="wrap">');
+  parts.push(`<h1>${tvTitle}</h1>`);
+  parts.push('<div class="sub">Сезона / лига приказ + тековно коло</div>');
+  parts.push('<div class="meta">');
+  parts.push('<div class="box"><div class="k">Live</div><div class="v">ON</div></div>');
+  parts.push(`<div class="box"><div class="k">Датум</div><div class="v">${tvDate}</div></div>`);
+  parts.push(`<div class="box"><div class="k">Сектор</div><div class="v">${tvSector}</div></div>`);
+  parts.push(`<div class="box"><div class="k">Завршени кола</div><div class="v">${tvFinished}</div></div>`);
+  parts.push(`<div class="box"><div class="k">Играч(и)</div><div class="v">${tvPlayers}</div></div>`);
+  parts.push('</div>');
+  parts.push('<div class="grid">');
+  parts.push('<div class="card"><div class="title">League Top 10</div><table><thead><tr><th>#</th><th class="left">Играч</th><th>Пен.</th><th>Риби</th></tr></thead><tbody>');
+  parts.push(leagueRows);
+  parts.push('</tbody></table></div>');
+  parts.push('<div class="card"><div class="title">Тековно коло</div><table><thead><tr><th>#</th><th class="left">Играч</th><th>Пен.</th><th>Риби</th></tr></thead><tbody>');
+  parts.push(currentRows);
+  parts.push('</tbody></table></div>');
+  parts.push('</div>');
+  parts.push('<div id="clock" style="margin-top:10px;font-size:22px;color:#93c5fd"></div>');
+  parts.push('</div>');
+  parts.push('</body>');
+  parts.push('</html>');
+
+  w.document.open();
+  w.document.write(parts.join(''));
+  w.document.close();
+  w.setInterval(() => {
+    if(w.closed) return;
+    const now = new Date();
+    const el = w.document.getElementById('clock');
+    if(el) el.textContent = 'Време: ' + now.toLocaleTimeString();
+  }, 1000);
+  w.setInterval(() => {
+    if(!w.closed) w.location.reload();
+  }, 5000);
+}
+
+function showTab(id, el){
+  document.querySelectorAll('.tab-panel').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+  const panel = document.getElementById(id);
+  if(panel) panel.classList.add('active');
+  if(el) el.classList.add('active');
+}
+
+function renderFinishedRoundBoards(){
+  const rows = parseLeagueLines();
+  const renderRound = (idx, targetId, label) => {
+    const list = rows.map((r,i) => ({name:r.name, pen:r.penCols[idx], fish:r.fishCols[idx], idx:i})).filter(x => x.pen !== undefined || x.fish !== undefined);
+    const target = document.getElementById(targetId);
+    if(!target) return;
+    if(!list.length){
+      target.innerHTML = `<div class="small">Нема внесени резултати за ${label}.</div>`;
+      return;
+    }
+    list.sort((a,b) => {
+      const ap = Number.isFinite(a.pen) ? a.pen : Infinity;
+      const bp = Number.isFinite(b.pen) ? b.pen : Infinity;
+      if(ap !== bp) return ap - bp;
+      const af = Number.isFinite(a.fish) ? a.fish : -Infinity;
+      const bf = Number.isFinite(b.fish) ? b.fish : -Infinity;
+      if(bf !== af) return bf - af;
+      return a.idx - b.idx;
+    });
+
+    let html = '<div class="table-wrap"><table><thead><tr><th>Пласман</th><th>Играч</th><th>Пенали</th><th>Риби</th></tr></thead><tbody>';
+    list.forEach((r,pos) => {
+      const rowStyle = pos === 0 ? ' style="background:#fff7cc;font-weight:700"' : pos === 1 ? ' style="background:#f3f4f6;font-weight:700"' : pos === 2 ? ' style="background:#fde7d7;font-weight:700"' : '';
+      html += `<tr${rowStyle}><td>${pos+1}</td><td class="left">${esc(r.name)}</td><td>${r.pen === undefined ? '-' : fmt(r.pen)}</td><td>${r.fish === undefined ? '-' : fmt(r.fish)}</td></tr>`;
+    });
+    html += '</tbody></table></div>';
+    target.innerHTML = html;
+  };
+  renderRound(0, 'round1Board', 'Коло 1');
+  renderRound(1, 'round2Board', 'Коло 2');
+  renderRound(2, 'round3Board', 'Коло 3');
+  renderRound(3, 'round4Board', 'Коло 4');
+}
+
+function renderLeagueScoreboard(){
+  const rows = parseLeagueLines();
+  if(!qs('leagueBoard')) return;
+  if(!rows.length){ qs('leagueBoard').innerHTML = ''; return; }
+
+  const ranked = [...rows].sort((a,b) => {
+    const aPen = a.penCols.reduce((s,v) => s + v, 0);
+    const bPen = b.penCols.reduce((s,v) => s + v, 0);
+    if(aPen !== bPen) return aPen - bPen;
+    const aFish = a.fishCols.reduce((s,v) => s + v, 0);
+    const bFish = b.fishCols.reduce((s,v) => s + v, 0);
+    if(bFish !== aFish) return bFish - aFish;
+    const aBestPen = [...a.penCols].sort((x,y) => x - y);
+    const bBestPen = [...b.penCols].sort((x,y) => x - y);
+    for(let i=0; i<Math.max(aBestPen.length, bBestPen.length); i++){
+      const av = aBestPen[i] ?? Infinity;
+      const bv = bBestPen[i] ?? Infinity;
+      if(av !== bv) return av - bv;
+    }
+    const aBestFish = [...a.fishCols].sort((x,y) => y - x);
+    const bBestFish = [...b.fishCols].sort((x,y) => y - x);
+    for(let i=0; i<Math.max(aBestFish.length, bBestFish.length); i++){
+      const av = aBestFish[i] ?? -Infinity;
+      const bv = bBestFish[i] ?? -Infinity;
+      if(av !== bv) return bv - av;
+    }
+    return a.idx - b.idx;
+  });
+
+  let html = '<div class="table-wrap"><table><thead><tr><th>Лига пласман</th><th>Играч</th><th>Кола</th><th>Збир пенали</th><th>Збир риби</th><th>Најдобро коло пенали</th><th>Најдобро коло риби</th></tr></thead><tbody>';
+  ranked.forEach((r,pos) => {
+    const sumPen = r.penCols.reduce((s,v) => s + v, 0);
+    const sumFish = r.fishCols.reduce((s,v) => s + v, 0);
+    const bestPen = r.penCols.length ? Math.min(...r.penCols) : '-';
+    const bestFish = r.fishCols.length ? Math.max(...r.fishCols) : '-';
+    const rowStyle = pos === 0 ? ' style="background:#fff7cc;font-weight:700"' : pos === 1 ? ' style="background:#f3f4f6;font-weight:700"' : pos === 2 ? ' style="background:#fde7d7;font-weight:700"' : '';
+    html += `<tr${rowStyle}><td>${pos+1}</td><td class="left">${esc(r.name)}</td><td>${r.penCols.length}</td><td>${fmt(sumPen)}</td><td>${fmt(sumFish)}</td><td>${bestPen === '-' ? '-' : fmt(bestPen)}</td><td>${bestFish === '-' ? '-' : fmt(bestFish)}</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+  qs('leagueBoard').innerHTML = html;
+  renderFinishedRoundBoards();
+}
+
+function gather(){
+  const d = getData();
+  if(!d) return null;
+  const results = [];
+  for(let i=0; i<d.playersCount; i++){
+    const row = [];
+    for(let r=0; r<4; r++) row.push({fish:Number(qs(`fish_${i}_${r}`)?.value || 0)});
+    results.push(row);
+  }
+  return Object.assign({}, d, {results, leagueInput: qs('leagueInput').value});
+}
+
+function applyImportedState(s){
+  qs('playersCount').value = s.playersCount || 10;
+  qs('roundsCount').value = 4;
+  qs('competitionName').value = s.competitionName || '';
+  qs('competitionDate').value = s.competitionDate || '';
+  qs('sectorName').value = s.sectorName || '';
+  qs('drawMode').value = s.drawMode || 'random';
+  qs('roundMinutes').value = s.roundMinutes || 45;
+  qs('breakMinutes').value = s.breakMinutes || 15;
+  qs('finishedRounds').value = s.finishedRounds || 0;
+  qs('playersInput').value = (s.players || []).join('\n');
+  qs('positionsInput').value = (s.positions || []).join('\n');
+  qs('leagueInput').value = s.leagueInput || '';
+  build();
+  setTimeout(() => {
+    (s.results || []).forEach((row,i) => row.forEach((c,r) => {
+      if(qs(`fish_${i}_${r}`)) qs(`fish_${i}_${r}`).value = c.fish ?? 0;
+    }));
+    calc();
+    renderLeagueScoreboard();
+  }, 20);
+}
+
+function saveState(){
+  const s = gather();
+  if(!s) return;
+  localStorage.setItem('spin_pro_scoreboard', JSON.stringify(s));
+  alert('Зачувано локално во browser.');
+}
+
+function loadState(){
+  const raw = localStorage.getItem('spin_pro_scoreboard');
+  if(!raw) return alert('Нема зачувани податоци.');
+  const s = JSON.parse(raw);
+  applyImportedState(s);
+}
+
+function clearState(){
+  localStorage.removeItem('spin_pro_scoreboard');
+  localStorage.removeItem('spin_pro_scoreboard_autosave');
+  alert('Избришано.');
+}
+
+function exportOfflineJson(){
+  const s = gather();
+  if(!s) return;
+  const blob = new Blob([JSON.stringify(s, null, 2)], {type:'application/json;charset=utf-8;'});
+  const a = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  const safeName = (qs('competitionName').value || 'spin_natprevar').replace(/[^a-zA-Z0-9\-_\u0400-\u04FF]+/g, '_');
+  a.href = url;
+  a.download = safeName + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importOfflineJsonClick(){
+  const input = qs('offlineJsonFile');
+  if(input) input.click();
+}
+
+function importOfflineJson(event){
+  const file = event && event.target && event.target.files ? event.target.files[0] : null;
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      const s = JSON.parse(e.target.result);
+      applyImportedState(s);
+      localStorage.setItem('spin_pro_scoreboard', JSON.stringify(s));
+      alert('JSON фајлот е успешно вчитан.');
+    } catch(err) {
+      console.error(err);
+      alert('Невалиден JSON фајл.');
+    } finally {
+      if(qs('offlineJsonFile')) qs('offlineJsonFile').value = '';
+    }
+  };
+  reader.readAsText(file, 'utf-8');
+}
+
+function getAutoSaveEnabled(){ return localStorage.getItem('spin_pro_scoreboard_autosave') === '1'; }
+function updateAutoSaveButton(){ const btn = qs('autoSaveBtn'); if(btn) btn.textContent = `Auto Save: ${getAutoSaveEnabled() ? 'ON' : 'OFF'}`; }
+function toggleAutoSave(){ const next = !getAutoSaveEnabled(); localStorage.setItem('spin_pro_scoreboard_autosave', next ? '1' : '0'); updateAutoSaveButton(); if(next) autoSaveNow(); }
+function autoSaveNow(){ if(!getAutoSaveEnabled()) return; const s = gather(); if(!s) return; localStorage.setItem('spin_pro_scoreboard', JSON.stringify(s)); }
+function bindAutoSave(){
+  document.addEventListener('input', function(e){ if(e.target && (e.target.matches('input') || e.target.matches('textarea') || e.target.matches('select'))) autoSaveNow(); });
+  document.addEventListener('change', function(e){ if(e.target && (e.target.matches('input') || e.target.matches('textarea') || e.target.matches('select'))) autoSaveNow(); });
+}
+
+function exportCSV(){
+  const d = gather();
+  if(!d) return;
+  calc();
+  renderLeagueScoreboard();
+
+  const rows = [];
+  const head = ['Реден број','Играч'];
+  for(let r=0; r<4; r++) head.push(`Р${r+1} позиција`, `Р${r+1} риби`, `Р${r+1} пенали`);
+  head.push('Вкупно риби','Вкупно пенали','Пласман');
+  rows.push(head);
+
+  for(let i=0; i<d.playersCount; i++){
+    const row = [i+1, d.players[i]];
+    for(let r=0; r<4; r++) row.push(d.rounds[r][i], qs(`fish_${i}_${r}`)?.value || 0, qs(`pen_${i}_${r}`)?.textContent || '');
+    row.push(qs(`tf_${i}`)?.textContent || 0, qs(`tp_${i}`)?.textContent || 0, qs(`pl_${i}`)?.textContent || '');
+    rows.push(row);
+  }
+
+  rows.push([]);
+  rows.push(['LEAGUE SCOREBOARD']);
+  rows.push(['Пласман','Играч','Кола','Збир пенали','Збир риби','Најдобро коло пенали','Најдобро коло риби']);
+
+  const ranked = parseLeagueLines().sort((a,b) => {
+    const aPen = a.penCols.reduce((s,v) => s + v, 0);
+    const bPen = b.penCols.reduce((s,v) => s + v, 0);
+    if(aPen !== bPen) return aPen - bPen;
+    const aFish = a.fishCols.reduce((s,v) => s + v, 0);
+    const bFish = b.fishCols.reduce((s,v) => s + v, 0);
+    if(bFish !== aFish) return bFish - aFish;
+    return a.idx - b.idx;
+  });
+
+  ranked.forEach((r,pos) => rows.push([
+    pos + 1,
+    r.name,
+    r.penCols.length,
+    fmt(r.penCols.reduce((s,v) => s + v, 0)),
+    fmt(r.fishCols.reduce((s,v) => s + v, 0)),
+    r.penCols.length ? fmt(Math.min(...r.penCols)) : '-',
+    r.fishCols.length ? fmt(Math.max(...r.fishCols)) : '-'
+  ]));
+
+  const csv = rows.map(r => r.map(csvEsc).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  a.href = url;
+  a.download = 'spin_pro_scoreboard.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function csvEsc(v){
+  const s = String(v ?? '');
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+}
+
+function printReport(){ calc(); renderLeagueScoreboard(); window.print(); }
+
+function runSelfTests(){
+  console.assert(norm('a\nb\n').length === 2, 'norm should split on \\n');
+  console.assert(calcRoundPenalties([{idx:0,fish:5},{idx:1,fish:5},{idx:2,fish:0}], 3).join(',') === '1.5,1.5,3', 'tie and zero penalty test failed');
+  const parsed = (function(){
+    const previous = qs('leagueInput').value;
+    qs('leagueInput').value = 'A|1,2|3,4\nB|5|6';
+    const result = parseLeagueLines();
+    qs('leagueInput').value = previous;
+    return result;
+  })();
+  console.assert(parsed.length === 2 && parsed[0].penCols[1] === 2 && parsed[1].fishCols[0] === 6, 'league parse test failed');
+  const tvCss = [
+    '.top1{color:#fbbf24;font-weight:700}',
+    '.top1::before{content:"🥇 ";}',
+    '.top2{color:#d1d5db;font-weight:700}',
+    '.top2::before{content:"🥈 ";}',
+    '.top3{color:#f59e0b;font-weight:700}',
+    '.top3::before{content:"🥉 ";}'
+  ].join('');
+  console.assert(tvCss.includes('🥇') && tvCss.includes('top3'), 'tv css medal block failed');
+}
+
+function startRoundTimer(){
+  const minutes = Number(qs('roundMinutes').value || 45);
+  let total = minutes * 60;
+  const el = qs('countdown');
+  if(!el) return;
+  if(window._timerInterval) clearInterval(window._timerInterval);
+  function tick(){
+    const m = Math.floor(total/60);
+    const s = total % 60;
+    el.textContent = `⏳ ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(total <= 0){
+      clearInterval(window._timerInterval);
+      el.textContent = '⛔ КРАЈ НА РУНДА';
+      try{
+        const beep = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = beep.createOscillator();
+        const gain = beep.createGain();
+        osc.connect(gain);
+        gain.connect(beep.destination);
+        osc.type = 'sine';
+        osc.frequency.value = 880;
+        gain.gain.value = 0.05;
+        osc.start();
+        setTimeout(() => { osc.stop(); beep.close(); }, 800);
+      }catch(e){}
+      return;
+    }
+    total--;
+  }
+  tick();
+  window._timerInterval = setInterval(tick,1000);
+}
+
+function toggleTournamentMode(){
+  const enabled = document.body.classList.toggle('tournament-mode');
+  const btn = qs('tournamentModeBtn');
+  if(btn){
+    btn.textContent = `Tournament Mode: ${enabled ? 'ON' : 'OFF'}`;
+    btn.classList.toggle('active', enabled);
+  }
+}
+
+qs('drawMode').addEventListener('change', () => {
+  if(qs('drawMode').value === 'random') drawPositions();
+  autoSaveNow();
+});
+
+bindAutoSave();
+updateAutoSaveButton();
+generateTemplate();
+build();
+renderLeagueScoreboard();
+renderFinishedRoundBoards();
+runSelfTests();
+</script>
+</body>
+</html>
